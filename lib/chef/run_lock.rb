@@ -49,8 +49,8 @@ class Chef
     end
 
     # Acquire the system-wide lock. Will block indefinitely if another process
-    # already has the lock and Chef::Config[:what_is_a_good_name_for_this] is
-    # not set. Otherwise will block for Chef::Config[:what_is_a_good_name_for_this]
+    # already has the lock and Chef::Config[:run_lock_timeout] is
+    # not set. Otherwise will block for Chef::Config[:run_lock_timeout]
     # seconds and exit if the lock is not acquired.
     #
     # Each call to acquire should have a corresponding call to #release.
