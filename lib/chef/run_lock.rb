@@ -158,7 +158,7 @@ class Chef
     end
 
     def runpid
-      runlock.read.strip.chomp
+      runlock.read.strip
     end
 
     def run_lock_timeout
