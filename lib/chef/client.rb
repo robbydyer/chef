@@ -229,8 +229,6 @@ class Chef
         rescue Exception => e
           Chef::Log.error(e.to_s)
           exit 1
-        else
-          exit 0
         end
       end
     end
