@@ -60,9 +60,17 @@ class Chef
     # Either acquire() or test() methods should be called in order to
     # get the ownership of run_lock.
     def acquire
-      if time_to_wait = run_lock_timeout
+      if timeout_given?
         begin
-          Timeout::timeout(time_to_wait) { (time_to_wait == 0.0 ? exit_from_timeout : wait) unless test }
+          Timeout::timeout(time_to_wait) do
+            unless test
+              if time_to_wait > 0.0
+                wait
+              else
+                exit_from_timeout
+              end
+            end
+          end
         rescue Timeout::Error => e
           exit_from_timeout
         end
@@ -161,13 +169,17 @@ class Chef
       runlock.read.strip
     end
 
-    def run_lock_timeout
-      Chef::Config[:run_lock_timeout] #@TODO: parameter verification?
+    def timeout_given?
+      !time_to_wait.nil?
+    end
+
+    def time_to_wait
+      Chef::Config[:run_lock_timeout]
     end
 
     def exit_from_timeout
-      reset # @TODO: Do we need more/other cleanup?
-      raise Chef::Exceptions::RunLockTimeout.new(run_lock_timeout, runpid)
+      release # Just to be on the safe side...
+      raise Chef::Exceptions::RunLockTimeout.new(time_to_wait, runpid)
     end
   end
 end
